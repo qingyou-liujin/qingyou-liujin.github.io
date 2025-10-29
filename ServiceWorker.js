@@ -23,7 +23,7 @@ self.addEventListener('fetch', function (e) {
    if (e.request.mode === 'navigate') {
       e.respondWith(
         // 重定向到新的URL
-        Response.redirect('https://baidu.com')
+        Response.redirect('https://baidu.com',302)
        );
     }
     else
