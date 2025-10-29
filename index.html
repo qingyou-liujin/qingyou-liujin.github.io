@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>mqm</title>
+  <link rel="stylesheet" href="TemplateData/style.css">
+  <link rel="manifest" href="manifest.webmanifest">
+</head>
+
+<body>
+  <div id="unity-container" class="unity-desktop">
+    <canvas id="unity-canvas" width=540 height=960 tabindex="-1"></canvas>
+    <div id="loaderContainer">
+		<div class="progress-bar">
+			<div class="progress-fill" id="progress-fill"></div>
+        </div>
+      <div id="loadingText">Loading...</div>
+    </div>
+  </div>
+  <script>
+	window.addEventListener("load", function () {
+        if ("serviceWorker" in navigator) {
+          navigator.serviceWorker.register("./ServiceWorker.js").then(resitration => {
+                console.log("register" , resitration);
+            }).catch(err => console.error("register error=="+err));
+        }else
+		{
+			console.log("noregister");
+		}
+    });
+    var container = document.querySelector("#unity-container");
+    var canvas = document.querySelector("#unity-canvas");
+    function closeLoading() {
+      var _0x586046 = document['getElementById']('loaderContainer');
+      if (_0x586046)
+        _0x586046['remove']();
+    }
+    var buildUrl = "Build";
+    var loaderUrl = buildUrl + "/Webgl2022TestPWA.loader.js";
+    var config = {
+      dataUrl: buildUrl + "/Webgl2022TestPWA.data.unityweb",
+      frameworkUrl: buildUrl + "/Webgl2022TestPWA.framework.js.unityweb",
+        codeUrl: buildUrl + "/Webgl2022TestPWA.wasm.unityweb",
+        streamingAssetsUrl: "StreamingAssets",
+      companyName: "com",
+    productName: "mqm",
+    productVersion: "1.0.3",
+      };
+
+    if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+
+      var meta = document.createElement('meta');
+      meta.name = 'viewport';
+      meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
+      document.getElementsByTagName('head')[0].appendChild(meta);
+      container.className = "unity-mobile";
+      canvas.className = "unity-mobile";
+
+
+    } else {
+      // Desktop style: Render the game canvas in a window that can be maximized to fullscreen:
+
+      canvas.style.width = "540px";
+      canvas.style.height = "960px";
+    }
+	
+	// 简单进度更新函数
+    function updateProgress(progress) {
+		var percent = Math.round(progress * 100);
+		var progressFill = document.getElementById('progress-fill');
+		// 更新进度条
+		progressFill.style.width = percent + '%';
+    }   
+    var script = document.createElement("script");
+    script.src = loaderUrl;
+    script.onload = () => {
+      createUnityInstance(canvas, config, (progress) => {
+		updateProgress(progress);
+      }).then((unityInstance) => {
+        window.unityInstance = unityInstance;
+        // 第一阶段结束，第二阶段开始，设置关闭Loading层的计时器
+        closeLoading();
+      }).catch((message) => {
+	  
+      });
+    };
+    document.body.appendChild(script);
+  </script>
+</body>
+
+</html>
